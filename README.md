@@ -19,3 +19,18 @@ This model is an improvement on the previous model as such because it uses an li
   weights by using this method but holds a bad characteristic that we might reach the minimum we could oscillate around it due to huge noise in each dataset, hence to decrease 
   this effect we normally use mini batch gradient descent which takes a small batch at a time and runs gradient descent over it which uses the vector implementation hence is 
   faster and also has lesser noise in weight updates also we tend to decrease the learning rate by the increase in the number of iterations.
+
+
+
+
+
+
+
+
+# References:
+## Linear Models:
+  ### Rosenblatt's Perceptron:
+      https://blogs.umass.edu/brain-wars/files/2016/03/rosenblatt-1957.pdf
+  ### Adaline Gradient Descent:
+      **The paper concerning this concept is currently not available but still wikipedia could give you great information**
+      https://en.wikipedia.org/wiki/ADALINE
