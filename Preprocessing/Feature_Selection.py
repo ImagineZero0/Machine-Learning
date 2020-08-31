@@ -1,0 +1,61 @@
+'''
+Varun Gupta
+This is an implementation of the Sequential Backward Selection Algorithm which is used to select best subset of features from a feature subspace when we are needed to select some best features and this is one of the algorithms used in feature selection. It works on the principle of removing that feature which don't decrease the performance of the model by very huge factor and hence keeps on removing these features by using a greedy approach and then eliminates those features and therefore gets the best features for estimation of the model and also generalizes well and reduces the high variance of complex models.
+Machine Learning Repository
+'''
+from sklearn.base import clone 
+from itertools import combinations
+import numpy as np
+from sklearn.metrics import accuracy_score
+from sklearn.model_selection import train_test_split
+
+class SBS():
+    
+    def __init__(self,estimator,k_features,scoring = accuracy_score,test_size=0.25,
+                 random_state = 0):
+        self.scoring = scoring
+        self.estimator =  clone(estimator)
+        self.k_features = k_features
+        self.test_size = test_size
+        self.random_state = random_state
+        
+    def fit(self,X,y):
+        X_train , X_test, y_train,y_test = train_test_split(X,y,test_size = 
+                                                            self.test_size,random_state = 
+                                                            self.random_state)
+        
+        dim = X_train.shape[1]
+        self.indices_ = tuple(range(dim))
+        self.subsets_ = [self.indices_]
+        score = self._calc_score(X_train,y_train,X_test,y_test,self.indices_)
+        
+        self.scores_ = [score]
+        
+        while dim > self.k_features:
+            scores = []
+            subsets = []
+            
+            for p in combinations(self.indices_,r = dim - 1):
+                score = self._calc_score(X_train,y_train,X_test,y_test,p)
+                scores.append(score)
+                subsets.append(p)
+                
+            best = np.argmax(scores)
+            self.indices_ = subsets[best]
+            self.subsets_.append(self.indices_)
+            dim -= 1
+            
+            self.scores_.append(scores[best])
+        self.k_score_ = self.scores_[-1]
+        
+        return self
+        
+    def transform(self,X):
+        return X[:,self.indices_]
+    
+    def _calc_score(self,X_train,y_train,X_test,y_test,indices):
+        self.estimator.fit(X_train[:,indices],y_train)
+        y_pred = self.estimator.predict(X_test[:,indices])
+        score = self.scoring(y_test,y_pred)
+        return score
+   
